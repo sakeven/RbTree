@@ -20,6 +20,7 @@ type node struct {
 
 type Tree struct {
 	root *node
+	size int
 }
 
 func NewTree() *Tree {
@@ -32,6 +33,17 @@ func (t *Tree) Find(key Item) interface{} {
 		return n.Value
 	}
 	return nil
+}
+
+func (t *Tree) Empty() bool {
+	if t.root == nil {
+		return true
+	}
+	return false
+}
+
+func (t *Tree) Size() int {
+	return t.size
 }
 
 func (t *Tree) Insert(key Item, value interface{}) {
@@ -48,6 +60,8 @@ func (t *Tree) Insert(key Item, value interface{}) {
 	}
 
 	z := &node{parent: y, color: RED, Key: key, Value: value}
+	t.size += 1
+
 	if y == nil {
 		z.color = BLACK
 		t.root = z
@@ -58,6 +72,7 @@ func (t *Tree) Insert(key Item, value interface{}) {
 		y.right = z
 	}
 	t.rb_insert_fixup(z)
+
 }
 
 func (t *Tree) Delete(key Item) {
@@ -99,6 +114,7 @@ func (t *Tree) Delete(key Item) {
 	if y_original_color == BLACK {
 		t.rb_delete_fixup(x, parent)
 	}
+	t.size -= 1
 }
 
 func (t *Tree) rb_insert_fixup(z *node) {
