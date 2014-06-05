@@ -23,10 +23,12 @@ type Tree struct {
 	size int
 }
 
+//return a new rbtree
 func NewTree() *Tree {
 	return &Tree{}
 }
 
+//find the node and return its value
 func (t *Tree) Find(key Item) interface{} {
 	n := t.findnode(key)
 	if n != nil {
@@ -35,6 +37,12 @@ func (t *Tree) Find(key Item) interface{} {
 	return nil
 }
 
+//find the node and return it as a iterator
+func (t *Tree) FindIt(key Item) *node {
+	return t.findnode(key)
+}
+
+//check if the rbtree is empty
 func (t *Tree) Empty() bool {
 	if t.root == nil {
 		return true
@@ -42,10 +50,17 @@ func (t *Tree) Empty() bool {
 	return false
 }
 
+//create the rbtree's iterator that points to the minmum node
+func (t *Tree) Iterator() *node {
+	return minimum(t.root)
+}
+
+//return the size of the rbtree
 func (t *Tree) Size() int {
 	return t.size
 }
 
+//insert the key-value pair into thr rbtree
 func (t *Tree) Insert(key Item, value interface{}) {
 	x := t.root
 	var y *node
@@ -75,6 +90,7 @@ func (t *Tree) Insert(key Item, value interface{}) {
 
 }
 
+//delete the node by key
 func (t *Tree) Delete(key Item) {
 	z := t.findnode(key)
 	if z == nil {
@@ -269,6 +285,7 @@ func (t *Tree) Preorder() {
 	fmt.Println("preorder end!")
 }
 
+//find the node be key and return it,if not exists return nil
 func (t *Tree) findnode(key Item) *node {
 	x := t.root
 	for x != nil {
@@ -285,6 +302,7 @@ func (t *Tree) findnode(key Item) *node {
 	return nil
 }
 
+//transplant the subtree u and v
 func (t *Tree) transplant(u, v *node) {
 	if u.parent == nil {
 		t.root = v
@@ -297,6 +315,10 @@ func (t *Tree) transplant(u, v *node) {
 		return
 	}
 	v.parent = u.parent
+}
+
+func (n *node) Next() *node {
+	return successor(n)
 }
 
 func (n *node) preorder() {
@@ -322,6 +344,19 @@ func (n *node) preorder() {
 	}
 }
 
+//return the successor of the node
+func successor(x *node) *node {
+	if x.right != nil {
+		return minimum(x.right)
+	}
+	y := x.parent
+	for y != nil && x == y.right {
+		x = y
+		y = x.parent
+	}
+	return y
+}
+
 func getColor(n *node) int {
 	if n == nil {
 		return BLACK
@@ -329,6 +364,7 @@ func getColor(n *node) int {
 	return n.color
 }
 
+//find the minimum node of subtree n.
 func minimum(n *node) *node {
 	for n.left != nil {
 		n = n.left
@@ -336,6 +372,7 @@ func minimum(n *node) *node {
 	return n
 }
 
+//find the maximum node of subtree n.
 func maximum(n *node) *node {
 	for n.right != nil {
 		n = n.right
