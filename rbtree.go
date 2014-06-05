@@ -7,15 +7,17 @@ const (
 	BLACK = 1
 )
 
-type Item interface {
+type keytype interface {
 	LessThan(interface{}) bool
 }
+
+type valuetype interface{}
 
 type node struct {
 	left, right, parent *node
 	color               int
-	Key                 Item
-	Value               interface{}
+	Key                 keytype
+	Value               valuetype
 }
 
 type Tree struct {
@@ -29,7 +31,7 @@ func NewTree() *Tree {
 }
 
 //find the node and return its value
-func (t *Tree) Find(key Item) interface{} {
+func (t *Tree) Find(key keytype) interface{} {
 	n := t.findnode(key)
 	if n != nil {
 		return n.Value
@@ -38,7 +40,7 @@ func (t *Tree) Find(key Item) interface{} {
 }
 
 //find the node and return it as a iterator
-func (t *Tree) FindIt(key Item) *node {
+func (t *Tree) FindIt(key keytype) *node {
 	return t.findnode(key)
 }
 
@@ -61,7 +63,7 @@ func (t *Tree) Size() int {
 }
 
 //insert the key-value pair into thr rbtree
-func (t *Tree) Insert(key Item, value interface{}) {
+func (t *Tree) Insert(key keytype, value valuetype) {
 	x := t.root
 	var y *node
 
@@ -91,7 +93,7 @@ func (t *Tree) Insert(key Item, value interface{}) {
 }
 
 //delete the node by key
-func (t *Tree) Delete(key Item) {
+func (t *Tree) Delete(key keytype) {
 	z := t.findnode(key)
 	if z == nil {
 		return
@@ -115,8 +117,9 @@ func (t *Tree) Delete(key Item) {
 		if y.parent == z {
 			if x == nil {
 				parent = y
+			} else {
+				x.parent = y
 			}
-			x.parent = y
 		} else {
 			t.transplant(y, y.right)
 			y.right = z.right
@@ -285,8 +288,8 @@ func (t *Tree) Preorder() {
 	fmt.Println("preorder end!")
 }
 
-//find the node be key and return it,if not exists return nil
-func (t *Tree) findnode(key Item) *node {
+//find the node by key and return it,if not exists return nil
+func (t *Tree) findnode(key keytype) *node {
 	x := t.root
 	for x != nil {
 		if key.LessThan(x.Key) {
