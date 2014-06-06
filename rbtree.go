@@ -62,6 +62,12 @@ func (t *Tree) Size() int {
 	return t.size
 }
 
+//destroy the rbtree
+func (t *Tree) Clear() {
+	t.root = nil
+	t.size = 0
+}
+
 //insert the key-value pair into thr rbtree
 func (t *Tree) Insert(key keytype, value valuetype) {
 	x := t.root
@@ -320,6 +326,7 @@ func (t *Tree) transplant(u, v *node) {
 	v.parent = u.parent
 }
 
+//return the node's successor as an iterator
 func (n *node) Next() *node {
 	return successor(n)
 }
@@ -360,6 +367,7 @@ func successor(x *node) *node {
 	return y
 }
 
+//get color of the node
 func getColor(n *node) int {
 	if n == nil {
 		return BLACK
