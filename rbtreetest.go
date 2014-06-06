@@ -42,16 +42,11 @@ func main() {
 	fmt.Println("Iterator test begin")
 
 	it := tree.Iterator()
-	cnt := 1
 
 	for it != nil {
 		fmt.Println(it.Value)
 		fmt.Println(it.Key)
 		it = it.Next()
-		cnt++
-		if cnt > 8 {
-			break
-		}
 	}
 
 	fmt.Println("Iterator test end")
