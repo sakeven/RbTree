@@ -12,6 +12,11 @@ func (n key) LessThan(b interface{}) bool {
 	return n < value
 }
 
+type node struct {
+	str string
+	vl  int
+}
+
 func main() {
 	tree := rbtree.NewTree()
 
@@ -24,7 +29,44 @@ func main() {
 	fmt.Printf("size is %d\n", tree.Size())
 	tree.Preorder()
 
+	fmt.Println("Find test begin")
+	n := tree.FindIt(key(4))
+	fmt.Println(n.Value)
+	n.Value = "bdsf"
+	fmt.Println(n.Value)
+	n = tree.FindIt(key(4))
+	fmt.Println(n.Value)
 	fmt.Println(tree.Find(key(5)))
+	fmt.Println("Find test end")
+
+	fmt.Println("Iterator test begin")
+
+	it := tree.Iterator()
+	cnt := 1
+
+	for it != nil {
+		fmt.Println(it.Value)
+		fmt.Println(it.Key)
+		it = it.Next()
+		cnt++
+		if cnt > 8 {
+			break
+		}
+	}
+
+	fmt.Println("Iterator test end")
+
+	fmt.Println("Type test begin")
+	v := tree.Find(key(4))
+	fmt.Printf("%T\n", v)
+	tree2 := rbtree.NewTree()
+	tree2.Insert(key(1), node{"ads", 1})
+
+	no, _ := tree2.Find(key(1)).(node)
+	fmt.Printf("%T\n", no)
+	fmt.Println("Type test end")
+
+	fmt.Println("Delete test begin")
 	tree.Delete(key(6))
 	tree.Preorder()
 	for i := 1; i <= 6; i++ {
@@ -33,4 +75,10 @@ func main() {
 		tree.Preorder()
 		fmt.Printf("size is %d\n", tree.Size())
 	}
+	fmt.Println("Delete test end")
+
+	fmt.Println("Clear test begin")
+	tree2.Clear()
+	fmt.Println(tree2.Find(key(1)))
+	fmt.Println("Clear test end")
 }
