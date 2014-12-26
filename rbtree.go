@@ -25,12 +25,12 @@ type Tree struct {
 	size int
 }
 
-//return a new rbtree
+//NewTree return a new rbtree
 func NewTree() *Tree {
 	return &Tree{}
 }
 
-//find the node and return its value
+//Find find the node and return its value
 func (t *Tree) Find(key keytype) interface{} {
 	n := t.findnode(key)
 	if n != nil {
@@ -39,12 +39,12 @@ func (t *Tree) Find(key keytype) interface{} {
 	return nil
 }
 
-//find the node and return it as a iterator
+//FindIt find the node and return it as a iterator
 func (t *Tree) FindIt(key keytype) *node {
 	return t.findnode(key)
 }
 
-//check if the rbtree is empty
+//Empty check whether the rbtree is empty
 func (t *Tree) Empty() bool {
 	if t.root == nil {
 		return true
@@ -52,23 +52,23 @@ func (t *Tree) Empty() bool {
 	return false
 }
 
-//create the rbtree's iterator that points to the minmum node
+//Iterator create the rbtree's iterator that points to the minmum node
 func (t *Tree) Iterator() *node {
 	return minimum(t.root)
 }
 
-//return the size of the rbtree
+//Size return the size of the rbtree
 func (t *Tree) Size() int {
 	return t.size
 }
 
-//destroy the rbtree
+//Clear destroy the rbtree
 func (t *Tree) Clear() {
 	t.root = nil
 	t.size = 0
 }
 
-//insert the key-value pair into thr rbtree
+//Insert insert the key-value pair into thr rbtree
 func (t *Tree) Insert(key keytype, value valuetype) {
 	x := t.root
 	var y *node
@@ -98,7 +98,7 @@ func (t *Tree) Insert(key keytype, value valuetype) {
 
 }
 
-//delete the node by key
+//Delete delete the node by key
 func (t *Tree) Delete(key keytype) {
 	z := t.findnode(key)
 	if z == nil {
@@ -294,7 +294,7 @@ func (t *Tree) Preorder() {
 	fmt.Println("preorder end!")
 }
 
-//find the node by key and return it,if not exists return nil
+//findnode find the node by key and return it,if not exists return nil
 func (t *Tree) findnode(key keytype) *node {
 	x := t.root
 	for x != nil {
@@ -311,7 +311,7 @@ func (t *Tree) findnode(key keytype) *node {
 	return nil
 }
 
-//transplant the subtree u and v
+//transplant transplant the subtree u and v
 func (t *Tree) transplant(u, v *node) {
 	if u.parent == nil {
 		t.root = v
@@ -326,13 +326,12 @@ func (t *Tree) transplant(u, v *node) {
 	v.parent = u.parent
 }
 
-//return the node's successor as an iterator
+//Next return the node's successor as an iterator
 func (n *node) Next() *node {
 	return successor(n)
 }
 
 func (n *node) preorder() {
-
 	fmt.Printf("%v %v ", n.Key, n.Value)
 	if n.parent == nil {
 		fmt.Printf("nil")
@@ -354,7 +353,7 @@ func (n *node) preorder() {
 	}
 }
 
-//return the successor of the node
+//successor return the successor of the node
 func successor(x *node) *node {
 	if x.right != nil {
 		return minimum(x.right)
@@ -367,7 +366,7 @@ func successor(x *node) *node {
 	return y
 }
 
-//get color of the node
+//getColor get color of the node
 func getColor(n *node) int {
 	if n == nil {
 		return BLACK
@@ -375,7 +374,7 @@ func getColor(n *node) int {
 	return n.color
 }
 
-//find the minimum node of subtree n.
+//minimum find the minimum node of subtree n.
 func minimum(n *node) *node {
 	for n.left != nil {
 		n = n.left
@@ -383,7 +382,7 @@ func minimum(n *node) *node {
 	return n
 }
 
-//find the maximum node of subtree n.
+//maximum find the maximum node of subtree n.
 func maximum(n *node) *node {
 	for n.right != nil {
 		n = n.right
