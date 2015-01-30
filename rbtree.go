@@ -288,6 +288,7 @@ func (t *Tree) right_rotate(x *node) {
 	x.parent = y
 }
 func (t *Tree) Preorder() {
+	fmt.Println("preorder begin!")
 	if t.root != nil {
 		t.root.preorder()
 	}
@@ -332,23 +333,23 @@ func (n *node) Next() *node {
 }
 
 func (n *node) preorder() {
-	fmt.Printf("%v %v ", n.Key, n.Value)
+	fmt.Printf("(%v %v)", n.Key, n.Value)
 	if n.parent == nil {
 		fmt.Printf("nil")
 	} else {
-		fmt.Printf("par is %v", n.parent.Key)
+		fmt.Printf("whose parent is %v", n.parent.Key)
 	}
 	if n.color == RED {
-		fmt.Println(" RED")
+		fmt.Println(" and color RED")
 	} else {
-		fmt.Println(" BLACK")
+		fmt.Println(" and color BLACK")
 	}
 	if n.left != nil {
-		fmt.Printf("%v 'left child is ", n.Key)
+		fmt.Printf("%v's left child is ", n.Key)
 		n.left.preorder()
 	}
 	if n.right != nil {
-		fmt.Printf("%v 'right child is ", n.Key)
+		fmt.Printf("%v's right child is ", n.Key)
 		n.right.preorder()
 	}
 }
