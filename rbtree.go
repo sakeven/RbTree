@@ -68,7 +68,7 @@ func (t *Tree) Clear() {
 	t.size = 0
 }
 
-//Insert insert the key-value pair into thr rbtree
+//Insert insert the key-value pair into the rbtree
 func (t *Tree) Insert(key keytype, value valuetype) {
 	x := t.root
 	var y *node
