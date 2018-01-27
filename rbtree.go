@@ -2,6 +2,7 @@ package rbtree
 
 import "fmt"
 
+// color of node
 const (
 	RED   = 0
 	BLACK = 1
@@ -20,17 +21,18 @@ type node struct {
 	Value               valuetype
 }
 
+// Tree is a struct of red-black tree
 type Tree struct {
 	root *node
 	size int
 }
 
-//NewTree return a new rbtree
+// NewTree returns a new rbtree
 func NewTree() *Tree {
 	return &Tree{}
 }
 
-//Find find the node and return its value
+// Find finds the node and return its value
 func (t *Tree) Find(key keytype) interface{} {
 	n := t.findnode(key)
 	if n != nil {
@@ -39,12 +41,12 @@ func (t *Tree) Find(key keytype) interface{} {
 	return nil
 }
 
-//FindIt find the node and return it as a iterator
+// FindIt finds the node and return it as a iterator
 func (t *Tree) FindIt(key keytype) *node {
 	return t.findnode(key)
 }
 
-//Empty check whether the rbtree is empty
+// Empty checks whether the rbtree is empty
 func (t *Tree) Empty() bool {
 	if t.root == nil {
 		return true
@@ -52,23 +54,23 @@ func (t *Tree) Empty() bool {
 	return false
 }
 
-//Iterator create the rbtree's iterator that points to the minmum node
+// Iterator creates the rbtree's iterator that points to the minmum node
 func (t *Tree) Iterator() *node {
 	return minimum(t.root)
 }
 
-//Size return the size of the rbtree
+// Size returns the size of the rbtree
 func (t *Tree) Size() int {
 	return t.size
 }
 
-//Clear destroy the rbtree
+// Clear destroys the rbtree
 func (t *Tree) Clear() {
 	t.root = nil
 	t.size = 0
 }
 
-//Insert insert the key-value pair into the rbtree
+// Insert inserts the key-value pair into the rbtree
 func (t *Tree) Insert(key keytype, value valuetype) {
 	x := t.root
 	var y *node
@@ -83,7 +85,7 @@ func (t *Tree) Insert(key keytype, value valuetype) {
 	}
 
 	z := &node{parent: y, color: RED, Key: key, Value: value}
-	t.size += 1
+	t.size++
 
 	if y == nil {
 		z.color = BLACK
@@ -94,11 +96,11 @@ func (t *Tree) Insert(key keytype, value valuetype) {
 	} else {
 		y.right = z
 	}
-	t.rb_insert_fixup(z)
+	t.rbInsertFixup(z)
 
 }
 
-//Delete delete the node by key
+// Delete deletes the node by key
 func (t *Tree) Delete(key keytype) {
 	z := t.findnode(key)
 	if z == nil {
@@ -107,7 +109,7 @@ func (t *Tree) Delete(key keytype) {
 
 	var x, y, parent *node
 	y = z
-	y_original_color := y.color
+	yOriginalColor := y.color
 	parent = z.parent
 	if z.left == nil {
 		x = z.right
@@ -117,7 +119,7 @@ func (t *Tree) Delete(key keytype) {
 		t.transplant(z, z.left)
 	} else {
 		y = minimum(z.right)
-		y_original_color = y.color
+		yOriginalColor = y.color
 		x = y.right
 
 		if y.parent == z {
@@ -136,13 +138,14 @@ func (t *Tree) Delete(key keytype) {
 		y.left.parent = y
 		y.color = z.color
 	}
-	if y_original_color == BLACK {
-		t.rb_delete_fixup(x, parent)
+
+	if yOriginalColor == BLACK {
+		t.rbDeleteFixup(x, parent)
 	}
-	t.size -= 1
+	t.size--
 }
 
-func (t *Tree) rb_insert_fixup(z *node) {
+func (t *Tree) rbInsertFixup(z *node) {
 	var y *node
 	for z.parent != nil && z.parent.color == RED {
 		if z.parent == z.parent.parent.left {
@@ -150,16 +153,16 @@ func (t *Tree) rb_insert_fixup(z *node) {
 			if y != nil && y.color == RED {
 				z.parent.color = BLACK
 				y.color = BLACK
-				z.parent.parent.color = BLACK
+				z.parent.parent.color = RED
 				z = z.parent.parent
 			} else {
 				if z == z.parent.right {
 					z = z.parent
-					t.left_rotate(z)
+					t.leftRotate(z)
 				}
 				z.parent.color = BLACK
 				z.parent.parent.color = RED
-				t.right_rotate(z.parent.parent)
+				t.rightRotate(z.parent.parent)
 			}
 		} else {
 			y = z.parent.parent.left
@@ -171,18 +174,18 @@ func (t *Tree) rb_insert_fixup(z *node) {
 			} else {
 				if z == z.parent.left {
 					z = z.parent
-					t.right_rotate(z)
+					t.rightRotate(z)
 				}
 				z.parent.color = BLACK
 				z.parent.parent.color = RED
-				t.left_rotate(z.parent.parent)
+				t.leftRotate(z.parent.parent)
 			}
 		}
 	}
 	t.root.color = BLACK
 }
 
-func (t *Tree) rb_delete_fixup(x, parent *node) {
+func (t *Tree) rbDeleteFixup(x, parent *node) {
 	var w *node
 
 	for x != t.root && getColor(x) == BLACK {
@@ -194,7 +197,7 @@ func (t *Tree) rb_delete_fixup(x, parent *node) {
 			if w.color == RED {
 				w.color = BLACK
 				parent.color = RED
-				t.left_rotate(x.parent)
+				t.leftRotate(parent)
 				w = parent.right
 			}
 			if getColor(w.left) == BLACK && getColor(w.right) == BLACK {
@@ -206,7 +209,7 @@ func (t *Tree) rb_delete_fixup(x, parent *node) {
 						w.left.color = BLACK
 					}
 					w.color = RED
-					t.right_rotate(w)
+					t.rightRotate(w)
 					w = parent.right
 				}
 				w.color = parent.color
@@ -214,7 +217,7 @@ func (t *Tree) rb_delete_fixup(x, parent *node) {
 				if w.right != nil {
 					w.right.color = BLACK
 				}
-				t.left_rotate(parent)
+				t.leftRotate(parent)
 				x = t.root
 			}
 		} else {
@@ -222,7 +225,7 @@ func (t *Tree) rb_delete_fixup(x, parent *node) {
 			if w.color == RED {
 				w.color = BLACK
 				parent.color = RED
-				t.right_rotate(parent)
+				t.rightRotate(parent)
 				w = parent.left
 			}
 			if getColor(w.left) == BLACK && getColor(w.right) == BLACK {
@@ -234,7 +237,7 @@ func (t *Tree) rb_delete_fixup(x, parent *node) {
 						w.right.color = BLACK
 					}
 					w.color = RED
-					t.left_rotate(w)
+					t.leftRotate(w)
 					w = parent.left
 				}
 				w.color = parent.color
@@ -242,7 +245,7 @@ func (t *Tree) rb_delete_fixup(x, parent *node) {
 				if w.left != nil {
 					w.left.color = BLACK
 				}
-				t.right_rotate(parent)
+				t.rightRotate(parent)
 				x = t.root
 			}
 		}
@@ -252,7 +255,7 @@ func (t *Tree) rb_delete_fixup(x, parent *node) {
 	}
 }
 
-func (t *Tree) left_rotate(x *node) {
+func (t *Tree) leftRotate(x *node) {
 	y := x.right
 	x.right = y.left
 	if y.left != nil {
@@ -270,7 +273,7 @@ func (t *Tree) left_rotate(x *node) {
 	x.parent = y
 }
 
-func (t *Tree) right_rotate(x *node) {
+func (t *Tree) rightRotate(x *node) {
 	y := x.left
 	x.left = y.right
 	if y.right != nil {
@@ -278,7 +281,7 @@ func (t *Tree) right_rotate(x *node) {
 	}
 	y.parent = x.parent
 	if x.parent == nil {
-		t.root = x
+		t.root = y
 	} else if x == x.parent.left {
 		x.parent.left = y
 	} else {
@@ -287,6 +290,8 @@ func (t *Tree) right_rotate(x *node) {
 	y.right = x
 	x.parent = y
 }
+
+// Preorder prints the tree in pre order
 func (t *Tree) Preorder() {
 	fmt.Println("preorder begin!")
 	if t.root != nil {
@@ -295,7 +300,7 @@ func (t *Tree) Preorder() {
 	fmt.Println("preorder end!")
 }
 
-//findnode find the node by key and return it,if not exists return nil
+// findnode finds the node by key and return it,if not exists return nil
 func (t *Tree) findnode(key keytype) *node {
 	x := t.root
 	for x != nil {
@@ -304,15 +309,14 @@ func (t *Tree) findnode(key keytype) *node {
 		} else {
 			if key == x.Key {
 				return x
-			} else {
-				x = x.right
 			}
+			x = x.right
 		}
 	}
 	return nil
 }
 
-//transplant transplant the subtree u and v
+// transplant transplants the subtree u and v
 func (t *Tree) transplant(u, v *node) {
 	if u.parent == nil {
 		t.root = v
@@ -327,7 +331,7 @@ func (t *Tree) transplant(u, v *node) {
 	v.parent = u.parent
 }
 
-//Next return the node's successor as an iterator
+// Next returns the node's successor as an iterator
 func (n *node) Next() *node {
 	return successor(n)
 }
@@ -354,7 +358,7 @@ func (n *node) preorder() {
 	}
 }
 
-//successor return the successor of the node
+// successor returns the successor of the node
 func successor(x *node) *node {
 	if x.right != nil {
 		return minimum(x.right)
@@ -367,7 +371,7 @@ func successor(x *node) *node {
 	return y
 }
 
-//getColor get color of the node
+// getColor gets color of the node
 func getColor(n *node) int {
 	if n == nil {
 		return BLACK
@@ -375,7 +379,7 @@ func getColor(n *node) int {
 	return n.color
 }
 
-//minimum find the minimum node of subtree n.
+// minimum finds the minimum node of subtree n.
 func minimum(n *node) *node {
 	for n.left != nil {
 		n = n.left
@@ -383,7 +387,7 @@ func minimum(n *node) *node {
 	return n
 }
 
-//maximum find the maximum node of subtree n.
+// maximum finds the maximum node of subtree n.
 func maximum(n *node) *node {
 	for n.right != nil {
 		n = n.right

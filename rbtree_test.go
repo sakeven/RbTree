@@ -11,7 +11,7 @@ func (n key) LessThan(b interface{}) bool {
 	return n < value
 }
 
-func Test_Preorder(t *testing.T) {
+func TestPreorder(t *testing.T) {
 	tree := NewTree()
 
 	tree.Insert(key(1), "123")
@@ -22,12 +22,11 @@ func Test_Preorder(t *testing.T) {
 	tree.Insert(key(2), "bcd4")
 	if tree.Size() != 6 {
 		t.Error("Error size")
-		return
 	}
 	tree.Preorder()
 }
 
-func Test_Find(t *testing.T) {
+func TestFind(t *testing.T) {
 
 	tree := NewTree()
 
@@ -41,20 +40,17 @@ func Test_Find(t *testing.T) {
 	n := tree.FindIt(key(4))
 	if n.Value != "dfa3" {
 		t.Error("Error value")
-		return
 	}
 	n.Value = "bdsf"
 	if n.Value != "bdsf" {
 		t.Error("Error value modify")
-		return
 	}
 	value := tree.Find(key(5)).(string)
 	if value != "jcd4" {
 		t.Error("Error value after modifyed other node")
-		return
 	}
 }
-func Test_Iterator(t *testing.T) {
+func TestIterator(t *testing.T) {
 	tree := NewTree()
 
 	tree.Insert(key(1), "123")
@@ -72,7 +68,7 @@ func Test_Iterator(t *testing.T) {
 
 }
 
-func Test_Delete(t *testing.T) {
+func TestDelete(t *testing.T) {
 	tree := NewTree()
 
 	tree.Insert(key(1), "123")
@@ -92,6 +88,19 @@ func Test_Delete(t *testing.T) {
 	tree.Preorder()
 	if tree.Find(key(1)) != nil {
 		t.Error("Can't clear")
-		return
 	}
+}
+
+func TestDelete2(t *testing.T) {
+	tree := NewTree()
+	tree.Insert(key(4), "1qa")
+	tree.Insert(key(2), "2ws")
+	tree.Insert(key(3), "3ed")
+	tree.Insert(key(1), "4rf")
+	tree.Insert(key(8), "5tg")
+	tree.Insert(key(5), "6yh")
+	tree.Insert(key(7), "7uj")
+	tree.Insert(key(9), "8ik")
+	tree.Delete(key(1))
+	tree.Delete(key(2))
 }
