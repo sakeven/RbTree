@@ -1,6 +1,7 @@
 package rbtree
 
 import (
+	"fmt"
 	"testing"
 )
 
@@ -11,8 +12,42 @@ func (n key) LessThan(b interface{}) bool {
 	return n < value
 }
 
+// Preorder prints the tree in pre order
+func (t *Tree) Preorder() {
+	fmt.Println("preorder begin!")
+	if t.root != nil {
+		t.root.preorder()
+	}
+	fmt.Println("preorder end!")
+}
+
+func (n *node) preorder() {
+	fmt.Printf("(%v %v) ", n.Key, n.Value)
+	if n.parent == nil {
+		fmt.Printf("nil")
+	} else {
+		fmt.Printf("whose parent is %v", n.parent.Key)
+	}
+	if n.color == RED {
+		fmt.Println(" and color RED")
+	} else {
+		fmt.Println(" and color BLACK")
+	}
+	if n.left != nil {
+		fmt.Printf("%v's left child is ", n.Key)
+		n.left.preorder()
+	}
+	if n.right != nil {
+		fmt.Printf("%v's right child is ", n.Key)
+		n.right.preorder()
+	}
+}
+
 func TestPreorder(t *testing.T) {
 	tree := NewTree()
+	if !tree.Empty() {
+		t.Error("tree not empty")
+	}
 
 	tree.Insert(key(1), "123")
 	tree.Insert(key(3), "234")
@@ -22,6 +57,9 @@ func TestPreorder(t *testing.T) {
 	tree.Insert(key(2), "bcd4")
 	if tree.Size() != 6 {
 		t.Error("Error size")
+	}
+	if tree.Empty() {
+		t.Error("tree empty")
 	}
 	tree.Preorder()
 }
