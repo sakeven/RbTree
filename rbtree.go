@@ -1,51 +1,50 @@
 package rbtree
 
+import (
+	. "golang.org/x/exp/constraints"
+)
+
 // color of node
 const (
 	RED   = 0
 	BLACK = 1
 )
 
-type Keytype interface {
-	LessThan(interface{}) bool
-}
-
-type valuetype interface{}
-
-type node struct {
-	left, right, parent *node
+type node[K Ordered, V any] struct {
+	left, right, parent *node[K, V]
 	color               int
-	Key                 Keytype
-	Value               valuetype
+	Key                 K
+	Value               V
 }
 
 // Tree is a struct of red-black tree.
-type Tree struct {
-	root *node
+type Tree[K Ordered, V any] struct {
+	root *node[K, V]
 	size int
 }
 
 // NewTree creates a new rbtree.
-func NewTree() *Tree {
-	return &Tree{}
+func NewTree[K Ordered, V any]() *Tree[K, V] {
+	return &Tree[K, V]{}
 }
 
 // Find finds the node and return its value.
-func (t *Tree) Find(key Keytype) interface{} {
+func (t *Tree[K, V]) Find(key K) V {
 	n := t.findnode(key)
 	if n != nil {
 		return n.Value
 	}
-	return nil
+	var result V
+	return result
 }
 
 // FindIt finds the node and return it as an iterator.
-func (t *Tree) FindIt(key Keytype) *node {
+func (t *Tree[K, V]) FindIt(key K) *node[K, V] {
 	return t.findnode(key)
 }
 
 // Empty checks whether the rbtree is empty.
-func (t *Tree) Empty() bool {
+func (t *Tree[K, V]) Empty() bool {
 	if t.root == nil {
 		return true
 	}
@@ -53,43 +52,43 @@ func (t *Tree) Empty() bool {
 }
 
 // Iterator creates the rbtree's iterator that points to the minmum node.
-func (t *Tree) Iterator() *node {
+func (t *Tree[K, V]) Iterator() *node[K, V] {
 	return minimum(t.root)
 }
 
 // Size returns the size of the rbtree.
-func (t *Tree) Size() int {
+func (t *Tree[K, V]) Size() int {
 	return t.size
 }
 
 // Clear destroys the rbtree.
-func (t *Tree) Clear() {
+func (t *Tree[K, V]) Clear() {
 	t.root = nil
 	t.size = 0
 }
 
 // Insert inserts the key-value pair into the rbtree.
-func (t *Tree) Insert(key Keytype, value valuetype) {
+func (t *Tree[K, V]) Insert(key K, value V) {
 	x := t.root
-	var y *node
+	var y *node[K, V]
 
 	for x != nil {
 		y = x
-		if key.LessThan(x.Key) {
+		if key < x.Key {
 			x = x.left
 		} else {
 			x = x.right
 		}
 	}
 
-	z := &node{parent: y, color: RED, Key: key, Value: value}
+	z := &node[K, V]{parent: y, color: RED, Key: key, Value: value}
 	t.size++
 
 	if y == nil {
 		z.color = BLACK
 		t.root = z
 		return
-	} else if z.Key.LessThan(y.Key) {
+	} else if z.Key < y.Key {
 		y.left = z
 	} else {
 		y.right = z
@@ -99,13 +98,13 @@ func (t *Tree) Insert(key Keytype, value valuetype) {
 }
 
 // Delete deletes the node by key
-func (t *Tree) Delete(key Keytype) {
+func (t *Tree[K, V]) Delete(key K) {
 	z := t.findnode(key)
 	if z == nil {
 		return
 	}
 
-	var x, y *node
+	var x, y *node[K, V]
 	if z.left != nil && z.right != nil {
 		y = successor(z)
 	} else {
@@ -141,8 +140,8 @@ func (t *Tree) Delete(key Keytype) {
 	t.size--
 }
 
-func (t *Tree) rbInsertFixup(z *node) {
-	var y *node
+func (t *Tree[K, V]) rbInsertFixup(z *node[K, V]) {
+	var y *node[K, V]
 	for z.parent != nil && z.parent.color == RED {
 		if z.parent == z.parent.parent.left {
 			y = z.parent.parent.right
@@ -181,8 +180,8 @@ func (t *Tree) rbInsertFixup(z *node) {
 	t.root.color = BLACK
 }
 
-func (t *Tree) rbDeleteFixup(x, parent *node) {
-	var w *node
+func (t *Tree[K, V]) rbDeleteFixup(x, parent *node[K, V]) {
+	var w *node[K, V]
 
 	for x != t.root && getColor(x) == BLACK {
 		if x != nil {
@@ -251,7 +250,7 @@ func (t *Tree) rbDeleteFixup(x, parent *node) {
 	}
 }
 
-func (t *Tree) leftRotate(x *node) {
+func (t *Tree[K, V]) leftRotate(x *node[K, V]) {
 	y := x.right
 	x.right = y.left
 	if y.left != nil {
@@ -269,7 +268,7 @@ func (t *Tree) leftRotate(x *node) {
 	x.parent = y
 }
 
-func (t *Tree) rightRotate(x *node) {
+func (t *Tree[K, V]) rightRotate(x *node[K, V]) {
 	y := x.left
 	x.left = y.right
 	if y.right != nil {
@@ -288,10 +287,10 @@ func (t *Tree) rightRotate(x *node) {
 }
 
 // findnode finds the node by key and return it, if not exists return nil.
-func (t *Tree) findnode(key Keytype) *node {
+func (t *Tree[K, V]) findnode(key K) *node[K, V] {
 	x := t.root
 	for x != nil {
-		if key.LessThan(x.Key) {
+		if key < x.Key {
 			x = x.left
 		} else {
 			if key == x.Key {
@@ -304,12 +303,12 @@ func (t *Tree) findnode(key Keytype) *node {
 }
 
 // Next returns the node's successor as an iterator.
-func (n *node) Next() *node {
+func (n *node[K, V]) Next() *node[K, V] {
 	return successor(n)
 }
 
 // successor returns the successor of the node
-func successor(x *node) *node {
+func successor[K Ordered, V any](x *node[K, V]) *node[K, V] {
 	if x.right != nil {
 		return minimum(x.right)
 	}
@@ -322,7 +321,7 @@ func successor(x *node) *node {
 }
 
 // getColor gets color of the node.
-func getColor(n *node) int {
+func getColor[K Ordered, V any](n *node[K, V]) int {
 	if n == nil {
 		return BLACK
 	}
@@ -330,7 +329,7 @@ func getColor(n *node) int {
 }
 
 // minimum finds the minimum node of subtree n.
-func minimum(n *node) *node {
+func minimum[K Ordered, V any](n *node[K, V]) *node[K, V] {
 	for n.left != nil {
 		n = n.left
 	}

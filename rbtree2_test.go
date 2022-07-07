@@ -9,7 +9,7 @@ import (
 
 // Balanced check if redblack tree check if
 // path from the root node to any of its descendant NIL nodes contains the same number of black nodes.
-func (t *Tree) IsBalanced() bool {
+func (t *Tree[K, V]) IsBalanced() bool {
 	if t.root == nil {
 		return true
 	}
@@ -20,7 +20,7 @@ func (t *Tree) IsBalanced() bool {
 
 // first is used to record the number of black nodes in first path from node n
 // to its descendant NIL nodes.
-func (n *node) blackNodes(blacks int, first *int) bool {
+func (n *node[K, V]) blackNodes(blacks int, first *int) bool {
 	if n.color == BLACK {
 		blacks++
 	}
@@ -50,7 +50,7 @@ func (n *node) blackNodes(blacks int, first *int) bool {
 }
 
 func TestRandomInsertAndDelete(t *testing.T) {
-	ltree := NewTree()
+	ltree := NewTree[int, int]()
 	var arr []int
 	dict := map[int]bool{}
 
@@ -65,7 +65,7 @@ func TestRandomInsertAndDelete(t *testing.T) {
 			v := arr[idx]
 			arr = remove(arr, idx)
 			delete(dict, v)
-			ltree.Delete(key(v))
+			ltree.Delete(v)
 			if !ltree.IsBalanced() {
 				ltree.Preorder()
 				panic(fmt.Sprintf("after %d deleted, tree isn't balanced", v))
@@ -81,7 +81,7 @@ func TestRandomInsertAndDelete(t *testing.T) {
 			}
 			arr = append(arr, v)
 			dict[v] = true
-			ltree.Insert(key(v), v)
+			ltree.Insert(v, v)
 			if !ltree.IsBalanced() {
 				ltree.Preorder()
 				panic(fmt.Sprintf("after inserting %d, tree isn't balanced", v))
@@ -92,7 +92,7 @@ func TestRandomInsertAndDelete(t *testing.T) {
 	// random delete
 	for i := 0; i < 10000; i++ {
 		v := rand.Intn(1000000)
-		ltree.Delete(key(v))
+		ltree.Delete(v)
 		if !ltree.IsBalanced() {
 			ltree.Preorder()
 			panic(fmt.Sprintf("after %d deleted, tree isnot balance", v))

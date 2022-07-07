@@ -5,15 +5,8 @@ import (
 	"testing"
 )
 
-type key int
-
-func (n key) LessThan(b interface{}) bool {
-	value, _ := b.(key)
-	return n < value
-}
-
 // Preorder prints the tree in pre order
-func (t *Tree) Preorder() {
+func (t *Tree[K, V]) Preorder() {
 	fmt.Println("preorder begin!")
 	if t.root != nil {
 		t.root.preorder()
@@ -21,7 +14,7 @@ func (t *Tree) Preorder() {
 	fmt.Println("preorder end!")
 }
 
-func (n *node) preorder() {
+func (n *node[K, V]) preorder() {
 	fmt.Printf("(%v %v) ", n.Key, n.Value)
 	if n.parent == nil {
 		fmt.Printf("nil")
@@ -44,17 +37,17 @@ func (n *node) preorder() {
 }
 
 func TestPreorder(t *testing.T) {
-	tree := NewTree()
+	tree := NewTree[int, string]()
 	if !tree.Empty() {
 		t.Error("tree not empty")
 	}
 
-	tree.Insert(key(1), "123")
-	tree.Insert(key(3), "234")
-	tree.Insert(key(4), "dfa3")
-	tree.Insert(key(6), "sd4")
-	tree.Insert(key(5), "jcd4")
-	tree.Insert(key(2), "bcd4")
+	tree.Insert(1, "123")
+	tree.Insert(3, "234")
+	tree.Insert(4, "dfa3")
+	tree.Insert(6, "sd4")
+	tree.Insert(5, "jcd4")
+	tree.Insert(2, "bcd4")
 	if tree.Size() != 6 {
 		t.Error("Error size")
 	}
@@ -65,17 +58,16 @@ func TestPreorder(t *testing.T) {
 }
 
 func TestFind(t *testing.T) {
+	tree := NewTree[int,string]()
 
-	tree := NewTree()
+	tree.Insert(1, "123")
+	tree.Insert(3, "234")
+	tree.Insert(4, "dfa3")
+	tree.Insert(6, "sd4")
+	tree.Insert(5, "jcd4")
+	tree.Insert(2, "bcd4")
 
-	tree.Insert(key(1), "123")
-	tree.Insert(key(3), "234")
-	tree.Insert(key(4), "dfa3")
-	tree.Insert(key(6), "sd4")
-	tree.Insert(key(5), "jcd4")
-	tree.Insert(key(2), "bcd4")
-
-	n := tree.FindIt(key(4))
+	n := tree.FindIt(4)
 	if n.Value != "dfa3" {
 		t.Error("Error value")
 	}
@@ -83,20 +75,21 @@ func TestFind(t *testing.T) {
 	if n.Value != "bdsf" {
 		t.Error("Error value modify")
 	}
-	value := tree.Find(key(5)).(string)
+	value := tree.Find(5)
 	if value != "jcd4" {
 		t.Error("Error value after modifyed other node")
 	}
 }
-func TestIterator(t *testing.T) {
-	tree := NewTree()
 
-	tree.Insert(key(1), "123")
-	tree.Insert(key(3), "234")
-	tree.Insert(key(4), "dfa3")
-	tree.Insert(key(6), "sd4")
-	tree.Insert(key(5), "jcd4")
-	tree.Insert(key(2), "bcd4")
+func TestIterator(t *testing.T) {
+	tree := NewTree[int,string]()
+
+	tree.Insert(1, "123")
+	tree.Insert(3, "234")
+	tree.Insert(4, "dfa3")
+	tree.Insert(6, "sd4")
+	tree.Insert(5, "jcd4")
+	tree.Insert(2, "bcd4")
 
 	it := tree.Iterator()
 
@@ -107,38 +100,38 @@ func TestIterator(t *testing.T) {
 }
 
 func TestDelete(t *testing.T) {
-	tree := NewTree()
+	tree := NewTree[int,string]()
 
-	tree.Insert(key(1), "123")
-	tree.Insert(key(3), "234")
-	tree.Insert(key(4), "dfa3")
-	tree.Insert(key(6), "sd4")
-	tree.Insert(key(5), "jcd4")
-	tree.Insert(key(2), "bcd4")
+	tree.Insert(1, "123")
+	tree.Insert(3, "234")
+	tree.Insert(4, "dfa3")
+	tree.Insert(6, "sd4")
+	tree.Insert(5, "jcd4")
+	tree.Insert(2, "bcd4")
 	for i := 1; i <= 6; i++ {
-		tree.Delete(key(i))
+		tree.Delete(i)
 		if tree.Size() != 6-i {
 			t.Error("Delete Error")
 		}
 	}
-	tree.Insert(key(1), "bcd4")
+	tree.Insert(1, "bcd4")
 	tree.Clear()
 	tree.Preorder()
-	if tree.Find(key(1)) != nil {
+	if tree.Find(1) != "" {
 		t.Error("Can't clear")
 	}
 }
 
 func TestDelete2(t *testing.T) {
-	tree := NewTree()
-	tree.Insert(key(4), "1qa")
-	tree.Insert(key(2), "2ws")
-	tree.Insert(key(3), "3ed")
-	tree.Insert(key(1), "4rf")
-	tree.Insert(key(8), "5tg")
-	tree.Insert(key(5), "6yh")
-	tree.Insert(key(7), "7uj")
-	tree.Insert(key(9), "8ik")
-	tree.Delete(key(1))
-	tree.Delete(key(2))
+	tree := NewTree[int,string]()
+	tree.Insert(4, "1qa")
+	tree.Insert(2, "2ws")
+	tree.Insert(3, "3ed")
+	tree.Insert(1, "4rf")
+	tree.Insert(8, "5tg")
+	tree.Insert(5, "6yh")
+	tree.Insert(7, "7uj")
+	tree.Insert(9, "8ik")
+	tree.Delete(1)
+	tree.Delete(2)
 }
