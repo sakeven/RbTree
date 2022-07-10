@@ -58,7 +58,7 @@ func TestPreorder(t *testing.T) {
 }
 
 func TestFind(t *testing.T) {
-	tree := NewTree[int,string]()
+	tree := NewTree[int, string]()
 
 	tree.Insert(1, "123")
 	tree.Insert(3, "234")
@@ -82,7 +82,7 @@ func TestFind(t *testing.T) {
 }
 
 func TestIterator(t *testing.T) {
-	tree := NewTree[int,string]()
+	tree := NewTree[int, string]()
 
 	tree.Insert(1, "123")
 	tree.Insert(3, "234")
@@ -100,7 +100,7 @@ func TestIterator(t *testing.T) {
 }
 
 func TestDelete(t *testing.T) {
-	tree := NewTree[int,string]()
+	tree := NewTree[int, string]()
 
 	tree.Insert(1, "123")
 	tree.Insert(3, "234")
@@ -123,7 +123,7 @@ func TestDelete(t *testing.T) {
 }
 
 func TestDelete2(t *testing.T) {
-	tree := NewTree[int,string]()
+	tree := NewTree[int, string]()
 	tree.Insert(4, "1qa")
 	tree.Insert(2, "2ws")
 	tree.Insert(3, "3ed")
