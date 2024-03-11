@@ -79,6 +79,20 @@ func TestFind(t *testing.T) {
 	if value != "jcd4" {
 		t.Error("Error value after modifyed other node")
 	}
+
+	t.Run("empty", func(t *testing.T) {
+		tree = NewTree[int, string]()
+
+		n := tree.FindIt(4)
+		if n != nil {
+			t.Fatalf("got %#v", n)
+		}
+
+		value := tree.Find(5)
+		if value != "" {
+			t.Fatalf("got %q", value)
+		}
+	})
 }
 
 func TestIterator(t *testing.T) {
@@ -97,6 +111,20 @@ func TestIterator(t *testing.T) {
 		it = it.Next()
 	}
 
+	t.Run("empty", func(t *testing.T) {
+		tree = NewTree[int, string]()
+
+		next := tree.Iterator()
+		t.Logf("tree.Iterator()=%#v", next)
+		if next != nil {
+			t.Fatalf(".Iterator() returned %#v", next)
+		}
+
+		size := tree.Size()
+		if size != 0 {
+			t.Fatalf("got size %d", size)
+		}
+	})
 }
 
 func TestDelete(t *testing.T) {
@@ -120,6 +148,16 @@ func TestDelete(t *testing.T) {
 	if tree.Find(1) != "" {
 		t.Error("Can't clear")
 	}
+
+	t.Run("empty", func(t *testing.T) {
+		tree = NewTree[int, string]()
+		tree.Delete(1)
+
+		size := tree.Size()
+		if size != 0 {
+			t.Fatalf("after size is %d", size)
+		}
+	})
 }
 
 func TestDelete2(t *testing.T) {
