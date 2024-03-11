@@ -53,6 +53,9 @@ func (t *Tree[K, V]) Empty() bool {
 
 // Iterator creates the rbtree's iterator that points to the minmum node.
 func (t *Tree[K, V]) Iterator() *node[K, V] {
+	if t == nil || t.root == nil {
+		return nil
+	}
 	return minimum(t.root)
 }
 
