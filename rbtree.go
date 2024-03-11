@@ -30,22 +30,28 @@ func NewTree[K Ordered, V any]() *Tree[K, V] {
 
 // Find finds the node and return its value.
 func (t *Tree[K, V]) Find(key K) V {
+	var result V
+	if t == nil {
+		return result
+	}
 	n := t.findnode(key)
 	if n != nil {
 		return n.Value
 	}
-	var result V
 	return result
 }
 
 // FindIt finds the node and return it as an iterator.
 func (t *Tree[K, V]) FindIt(key K) *node[K, V] {
+	if t == nil || t.root == nil {
+		return nil
+	}
 	return t.findnode(key)
 }
 
 // Empty checks whether the rbtree is empty.
 func (t *Tree[K, V]) Empty() bool {
-	if t.root == nil {
+	if t == nil || t.root == nil {
 		return true
 	}
 	return false
@@ -61,13 +67,18 @@ func (t *Tree[K, V]) Iterator() *node[K, V] {
 
 // Size returns the size of the rbtree.
 func (t *Tree[K, V]) Size() int {
+	if t == nil {
+		return 0
+	}
 	return t.size
 }
 
 // Clear destroys the rbtree.
 func (t *Tree[K, V]) Clear() {
-	t.root = nil
-	t.size = 0
+	if t != nil {
+		t.root = nil
+		t.size = 0
+	}
 }
 
 // Insert inserts the key-value pair into the rbtree.
@@ -102,6 +113,10 @@ func (t *Tree[K, V]) Insert(key K, value V) {
 
 // Delete deletes the node by key
 func (t *Tree[K, V]) Delete(key K) {
+	if t == nil || t.root == nil {
+		return
+	}
+
 	z := t.findnode(key)
 	if z == nil {
 		return
