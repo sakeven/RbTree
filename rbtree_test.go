@@ -2,6 +2,7 @@ package rbtree
 
 import (
 	"fmt"
+	"strings"
 	"testing"
 )
 
@@ -57,6 +58,56 @@ func TestPreorder(t *testing.T) {
 	tree.Preorder()
 }
 
+func TestTree(t *testing.T) {
+	tree := NewTree[int, string]()
+
+	t.Run("empty", func(t *testing.T) {
+		tree.Clear()
+		tree.Delete(1)
+
+		if !tree.Empty() {
+			t.Fatal("tree isn't empty")
+		}
+
+		size := tree.Size()
+		if size != 0 {
+			t.Errorf("unexpected tree size of %d", size)
+		}
+	})
+
+	t.Run("nil", func(t *testing.T) {
+		tree = nil
+
+		tree.Clear()
+		tree.Delete(1)
+
+		if !tree.Empty() {
+			t.Fatal("tree isn't empty")
+		}
+
+		size := tree.Size()
+		if size != 0 {
+			t.Errorf("unexpected tree size of %d", size)
+		}
+	})
+
+	var caught interface{}
+	t.Run("catch insert panic", func(t *testing.T) {
+		defer func() {
+			if err := recover(); err != nil {
+				caught = err
+			}
+		}()
+		// panics
+		tree.Insert(1, "abc")
+	})
+
+	error := fmt.Sprintf("%v", caught)
+	if !strings.Contains(error, "nil pointer dereference") {
+		t.Fatalf("unexpected error: %#v", caught)
+	}
+}
+
 func TestFind(t *testing.T) {
 	tree := NewTree[int, string]()
 
@@ -93,6 +144,20 @@ func TestFind(t *testing.T) {
 			t.Fatalf("got %q", value)
 		}
 	})
+
+	t.Run("nil", func(t *testing.T) {
+		tree = nil
+
+		n := tree.FindIt(4)
+		if n != nil {
+			t.Fatalf("got %#v", n)
+		}
+
+		value := tree.Find(5)
+		if value != "" {
+			t.Fatalf("got %q", value)
+		}
+	})
 }
 
 func TestIterator(t *testing.T) {
@@ -115,7 +180,20 @@ func TestIterator(t *testing.T) {
 		tree = NewTree[int, string]()
 
 		next := tree.Iterator()
-		t.Logf("tree.Iterator()=%#v", next)
+		if next != nil {
+			t.Fatalf(".Iterator() returned %#v", next)
+		}
+
+		size := tree.Size()
+		if size != 0 {
+			t.Fatalf("got size %d", size)
+		}
+	})
+
+	t.Run("nil", func(t *testing.T) {
+		tree = nil
+
+		next := tree.Iterator()
 		if next != nil {
 			t.Fatalf(".Iterator() returned %#v", next)
 		}
@@ -151,6 +229,16 @@ func TestDelete(t *testing.T) {
 
 	t.Run("empty", func(t *testing.T) {
 		tree = NewTree[int, string]()
+		tree.Delete(1)
+
+		size := tree.Size()
+		if size != 0 {
+			t.Fatalf("after size is %d", size)
+		}
+	})
+
+	t.Run("nil", func(t *testing.T) {
+		tree = nil
 		tree.Delete(1)
 
 		size := tree.Size()
